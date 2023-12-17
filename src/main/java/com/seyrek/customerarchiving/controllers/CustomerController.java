@@ -1,6 +1,7 @@
 package com.seyrek.customerarchiving.controllers;
 
 import com.seyrek.customerarchiving.entities.Customer;
+import com.seyrek.customerarchiving.responses.CustomerResponse;
 import com.seyrek.customerarchiving.services.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
         return new ResponseEntity<>(customerService.getAllCustomers(), OK);
     }
 

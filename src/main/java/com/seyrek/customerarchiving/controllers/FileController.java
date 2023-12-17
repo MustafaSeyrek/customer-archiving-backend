@@ -1,7 +1,10 @@
 package com.seyrek.customerarchiving.controllers;
 
 import com.seyrek.customerarchiving.entities.File;
+import com.seyrek.customerarchiving.responses.FileResponse;
+import com.seyrek.customerarchiving.services.CustomerService;
 import com.seyrek.customerarchiving.services.FileService;
+import com.seyrek.customerarchiving.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -22,11 +25,13 @@ import static org.springframework.http.HttpStatus.OK;
 @AllArgsConstructor
 public class FileController {
     private final FileService fileService;
-
+    private final UserService userService;
+    private final CustomerService customerService;
     @GetMapping
-    public ResponseEntity<List<File>> getAllFiles() {
-        List<File> files = fileService.getAllFiles().map(db -> {
-            return new File(db.getId(), db.getCode(), db.getName(), db.getPath(), db.getCustomerId(), db.getCreatedId(), db.getCreatedDate(), db.getUpdatedId(), db.getUpdatedDate());
+    public ResponseEntity<List<FileResponse>> getAllFiles() {
+        List<FileResponse> files = fileService.getAllFiles().map(db -> {
+            return new FileResponse(db.getId(), db.getCode(), db.getName(), db.getPath(), customerService.getCustomerById(db.getCustomerId()).getFullName(), userService.getUserById(db.getCreatedId()).getUsername(),
+                    db.getCreatedDate(), db.getUpdatedId() == null ? "" : userService.getUserById(db.getUpdatedId()).getUsername() , db.getUpdatedDate());
         }).collect(Collectors.toList());
         return ResponseEntity.status(OK).body(files);
     }

@@ -2,6 +2,7 @@ package com.seyrek.customerarchiving.services;
 
 import com.seyrek.customerarchiving.entities.Customer;
 import com.seyrek.customerarchiving.repositories.CustomerRepository;
+import com.seyrek.customerarchiving.responses.CustomerResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,12 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CustomerService {
     private final CustomerRepository customerRepository;
+    private final UserService userService;
 
-    public List<Customer> getAllCustomers() {
-        return customerRepository.findAll();
+    public List<CustomerResponse> getAllCustomers() {
+
+        return customerRepository.findAll().stream().map(u -> new CustomerResponse(u.getId(), u.getFullName(), userService.getUserById(u.getCreatedId()).getUsername(), u.getCreatedDate()
+        ,  u.getUpdatedId() == null ? "" : userService.getUserById(u.getUpdatedId()).getUsername(), u.getUpdatedDate())).toList();
     }
 
     public Customer createCustomer(Customer newCustomer) {
@@ -38,6 +42,7 @@ public class CustomerService {
     }
 
     public Customer getCustomerById(Long id) {
+        if(id == null) return null;
         return customerRepository.findById(id).orElse(null);
     }
 
