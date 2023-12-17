@@ -37,9 +37,9 @@ public class FileController {
     }
 
     @PostMapping
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestBody File bodyFile) {
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("createdId") Long createdId, @RequestParam("customerId") Long customerId) {
         try {
-            fileService.createFile(file, bodyFile);
+            fileService.createFile(file, createdId, customerId);
             return new ResponseEntity<>("File uploaded successfully!", OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
@@ -79,9 +79,9 @@ public class FileController {
     }
 
     @PutMapping("/{code}")
-    public ResponseEntity<String> updateFileByCode(@PathVariable String code, @RequestParam("file") MultipartFile file, @RequestBody File bodyFile) {
+    public ResponseEntity<String> updateFileByCode(@PathVariable String code, @RequestParam("file") MultipartFile file, @RequestParam("updatedId") Long updatedId) {
         try {
-            File f = fileService.updateFileByCode(code, file, bodyFile);
+            File f = fileService.updateFileByCode(code, file, updatedId);
             if (f != null) {
                 return new ResponseEntity<>("File updated successfully!", OK);
             } else {

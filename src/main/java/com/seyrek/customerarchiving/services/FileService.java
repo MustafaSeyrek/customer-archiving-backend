@@ -67,26 +67,26 @@ public class FileService {
         return fileRepository.findByCode(code);
     }
 
-    public File createFile(MultipartFile file, File bodyFile) throws IOException {
+    public File createFile(MultipartFile file, Long createdId, Long customerId) throws IOException {
         String name = StringUtils.cleanPath(file.getOriginalFilename());
         String code = RandomStringUtils.randomAlphanumeric(8);
         Path targetLocation = this.fileStorageLocation.resolve(code + "-" + name);
-        File f = File.builder().name(name).path("/uploads/files/" + code + "-" + name).createdDate(new Date()).customerId(bodyFile.getCustomerId()).createdId(bodyFile.getCreatedId())
+        File f = File.builder().name(name).path("/uploads/files/" + code + "-" + name).createdDate(new Date()).customerId(customerId).createdId(createdId)
                 .code(code).build();
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
         return fileRepository.save(f);
     }
 
-    public File updateFileByCode(String code, MultipartFile file, File bodyFile) throws IOException {
+    public File updateFileByCode(String code, MultipartFile file, Long updatedId) throws IOException {
         Optional<File> oldFile = Optional.ofNullable(fileRepository.findByCode(code));
         if (oldFile.isPresent()) {
             File foundFile = oldFile.get();
             String newCode = RandomStringUtils.randomAlphanumeric(8);
             String name = StringUtils.cleanPath(file.getOriginalFilename());
             foundFile.setCode(newCode);
-            foundFile.setUpdatedId(bodyFile.getUpdatedId());
+            foundFile.setUpdatedId(updatedId);
             foundFile.setName(name);
-            foundFile.setPath("/uploads/files/" + code + "-" + name);
+            foundFile.setPath("/uploads/files/" + newCode + "-" + name);
             foundFile.setUpdatedDate(new Date());
             fileRepository.save(foundFile);
             Path targetLocation = this.fileStorageLocation.resolve(newCode + "-" + name);
